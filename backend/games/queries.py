@@ -64,3 +64,23 @@ def filter_games(field, value):
     for game in results:
         game["_id"] = str(game["_id"])
     return results
+
+
+def filter_games_multiple(filters):
+    allowed_fields = ["Platform", "Genre", "Publisher", "Year_of_Release"]
+    query = {}
+
+    for field, value in filters.items():
+        if field not in allowed_fields:
+            continue  # ignore les champs non autorisés
+        if field == "Year_of_Release":
+            try:
+                value = int(value)
+            except ValueError:
+                continue  # ignore si mauvaise valeur
+        query[field] = value
+
+    results = list(collection.find(query))
+    for game in results:
+        game["_id"] = str(game["_id"])
+    return results

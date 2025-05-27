@@ -9,7 +9,8 @@ from .queries import (
     update_game,
     delete_game,
     get_top_10_games,
-    get_distinct_values
+    get_distinct_values,
+    filter_games_multiple
 )
 
 @api_view(['GET'])
@@ -56,12 +57,24 @@ def delete_game_view(request, game_id):
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
 @api_view(['GET'])
-def filter_games_view(request, field, value):
-    from .queries import filter_games
+def filter_games_view(request):
+    filters = {}
+    allowed_fields = ['Platform', 'Genre', 'Publisher', 'Year_of_Release']
+
+    for key in allowed_fields:
+        value = request.query_params.get(key)
+        if value:
+            # convertir Year_of_Release en int si besoin
+            if key == 'Year_of_Release':
+                try:
+                    value = int(value)
+                except ValueError:
+                    return Response({'error': 'Year_of_Release must be an integer'}, status=status.HTTP_400_BAD_REQUEST)
+            filters[key] = value
 
     try:
-        filtered = filter_games(field, value)
-        return Response(filtered)
+        games = filter_games_multiple(filters)
+        return Response(games)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
 
@@ -71,5 +84,4 @@ def get_distinct_field_values(request, field_name):
         values = get_distinct_values(field_name)
         return Response(values)
     except Exception as e:
-        return Response({'error': str(e)}, status=400)
-
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)

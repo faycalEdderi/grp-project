@@ -3,42 +3,42 @@ import './AllGames.css';
 
 export default function AllGames() {
   const [games, setGames] = useState([]);
-  const [filter, setFilter] = useState('all');
-  const [platforms, setPlatforms] = useState([]);
-  const [genres, setGenres] = useState([]);
-  const [publishers, setPublishers] = useState([]);
-  const [years, setYears] = useState([]);
+  const [filters, setFilters] = useState({
+    Platform: '',
+    Genre: '',
+    Publisher: '',
+    Year_of_Release: '',
+  });
 
-  const fetchGames = async (endpoint = 'http://localhost:8000/api/games/all/') => {
+  const fetchGames = async (filters) => {
     try {
-      const res = await fetch(endpoint);
+      // Construire la query string à partir de l'objet filters (filtre non vide uniquement)
+      const queryParams = new URLSearchParams();
+      for (const [key, value] of Object.entries(filters)) {
+        if (value) queryParams.append(key, value);
+      }
+      const queryString = queryParams.toString();
+      const url = queryString
+        ? `http://localhost:8000/api/games/filter?${queryString}`
+        : 'http://localhost:8000/api/games/all/';
+
+      const res = await fetch(url);
       const data = await res.json();
       setGames(data);
-      extractFilters(data);
     } catch (err) {
       console.error('Erreur lors du chargement des jeux :', err);
     }
   };
 
-  const extractFilters = (data) => {
-    setPlatforms([...new Set(data.map(g => g.Platform).filter(Boolean))].sort());
-    setGenres([...new Set(data.map(g => g.Genre).filter(Boolean))].sort());
-    setPublishers([...new Set(data.map(g => g.Publisher).filter(Boolean))].sort());
-    setYears([...new Set(data.map(g => g.Year_of_Release).filter(Boolean))].sort((a, b) => a - b));
-  };
-
   useEffect(() => {
-    fetchGames();
-  }, []);
+    fetchGames(filters);
+  }, [filters]);
 
-  const applyFilter = (type, value) => {
-    if (!value) {
-      setFilter('all');
-      fetchGames();
-    } else {
-      setFilter(`${type}: ${value}`);
-      fetchGames(`http://localhost:8000/api/games/filter/${type}/${value}/`);
-    }
+  const handleFilterChange = (type, value) => {
+    setFilters((prev) => ({
+      ...prev,
+      [type]: value,
+    }));
   };
 
   return (
@@ -47,50 +47,60 @@ export default function AllGames() {
 
       <div className="filters">
         <h4>Filtres :</h4>
-        <button onClick={() => { fetchGames(); setFilter('all'); }}>Tous</button>
 
-        <div>
-          <label>Plateforme : </label>
-          <select onChange={(e) => applyFilter('Platform', e.target.value)}>
-            <option value="">--</option>
-            {platforms.map(p => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-        </div>
+        <label>Plateforme : </label>
+        <select
+          value={filters.Platform}
+          onChange={(e) => handleFilterChange('Platform', e.target.value)}
+        >
+          <option value="">--</option>
+          {/* Remplace par ta liste dynamique ou statique */}
+          <option value="PS4">PS4</option>
+          <option value="Wii">Wii</option>
+          <option value="DS">DS</option>
+        </select>
 
-        <div>
-          <label>Genre : </label>
-          <select onChange={(e) => applyFilter('Genre', e.target.value)}>
-            <option value="">--</option>
-            {genres.map(g => (
-              <option key={g} value={g}>{g}</option>
-            ))}
-          </select>
-        </div>
+        <label>Genre : </label>
+        <select
+          value={filters.Genre}
+          onChange={(e) => handleFilterChange('Genre', e.target.value)}
+        >
+          <option value="">--</option>
+          <option value="Sports">Sports</option>
+          <option value="Platform">Platform</option>
+          <option value="Racing">Racing</option>
+        </select>
 
-        <div>
-          <label>Éditeur : </label>
-          <select onChange={(e) => applyFilter('Publisher', e.target.value)}>
-            <option value="">--</option>
-            {publishers.map(p => (
-              <option key={p} value={p}>{p}</option>
-            ))}
-          </select>
-        </div>
+        <label>Éditeur : </label>
+        <select
+          value={filters.Publisher}
+          onChange={(e) => handleFilterChange('Publisher', e.target.value)}
+        >
+          <option value="">--</option>
+          <option value="Nintendo">Nintendo</option>
+          <option value="EA">EA</option>
+        </select>
 
-        <div>
-          <label>Année : </label>
-          <select onChange={(e) => applyFilter('Year_of_Release', e.target.value)}>
-            <option value="">--</option>
-            {years.map(y => (
-              <option key={y} value={y}>{y}</option>
-            ))}
-          </select>
-        </div>
+        <label>Année : </label>
+        <select
+          value={filters.Year_of_Release}
+          onChange={(e) => handleFilterChange('Year_of_Release', e.target.value)}
+        >
+          <option value="">--</option>
+          <option value="2006">2006</option>
+          <option value="2009">2009</option>
+          <option value="2010">2010</option>
+        </select>
+
+        <button onClick={() => setFilters({
+          Platform: '',
+          Genre: '',
+          Publisher: '',
+          Year_of_Release: '',
+        })}>
+          Réinitialiser les filtres
+        </button>
       </div>
-
-      <p><strong>Filtre appliqué :</strong> {filter}</p>
 
       <ul className="games-list">
         {games.map((game, index) => (
