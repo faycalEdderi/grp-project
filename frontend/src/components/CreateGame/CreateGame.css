@@ -1,0 +1,27 @@
+.create-game-container {
+    max-width: 400px;
+    margin: 1rem auto;
+    padding: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+  }
+  
+  .create-game-container form input {
+    display: block;
+    width: 100%;
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+  
+  .create-game-container form button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .message {
+    margin-top: 1rem;
+    font-weight: bold;
+  }
+  
