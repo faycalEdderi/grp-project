@@ -53,3 +53,14 @@ def delete_game_view(request, game_id):
         return Response({'deleted': deleted_count})
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def filter_games_view(request, field, value):
+    from .queries import filter_games
+
+    try:
+        filtered = filter_games(field, value)
+        return Response(filtered)
+    except Exception as e:
+        return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+

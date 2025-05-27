@@ -44,3 +44,20 @@ def get_top_10_games():
         .sort("Global_Sales", -1)
         .limit(10)
     )
+
+
+def filter_games(field, value):
+    allowed_fields = ["Platform", "Genre", "Publisher", "Year_of_Release"]
+    if field not in allowed_fields:
+        raise ValueError("Filtre non autorisé.")
+
+    if field == "Year_of_Release":
+        try:
+            value = int(value)
+        except ValueError:
+            raise ValueError("L'année doit être un nombre.")
+
+    results = list(collection.find({field: value}))
+    for game in results:
+        game["_id"] = str(game["_id"])
+    return results
