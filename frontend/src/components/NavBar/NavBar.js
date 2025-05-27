@@ -8,6 +8,7 @@ function NavBar() {
       <Link to="/">🏆 Top 10</Link>
       <Link to="/games">🎮 Tous les jeux</Link>
       <Link to="/create">➕ Ajouter un jeu</Link>
+      <Link to="/platform-stats">📊 Statistiques par plateforme</Link>
     </nav>
   );
 }
