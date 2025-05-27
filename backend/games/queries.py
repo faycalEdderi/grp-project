@@ -44,6 +44,9 @@ def get_top_10_games():
         .sort("Global_Sales", -1)
         .limit(10)
     )
+    
+def get_distinct_values(field_name):
+    return collection.distinct(field_name)
 
 
 def filter_games(field, value):

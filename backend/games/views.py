@@ -9,6 +9,7 @@ from .queries import (
     update_game,
     delete_game,
     get_top_10_games,
+    get_distinct_values
 )
 
 @api_view(['GET'])
@@ -63,4 +64,12 @@ def filter_games_view(request, field, value):
         return Response(filtered)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def get_distinct_field_values(request, field_name):
+    try:
+        values = get_distinct_values(field_name)
+        return Response(values)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
 
