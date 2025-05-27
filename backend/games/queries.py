@@ -84,3 +84,22 @@ def filter_games_multiple(filters):
     for game in results:
         game["_id"] = str(game["_id"])
     return results
+
+
+def average_sales_by_platform():
+    pipeline = [
+        {
+            "$group": {
+                "_id": "$Platform",
+                "average_sales": {"$avg": "$Global_Sales"},
+                "total_sales": {"$sum": "$Global_Sales"},
+                "game_count": {"$sum": 1}
+            }
+        },
+        {
+            "$sort": {"average_sales": -1}
+        }
+    ]
+    results = list(collection.aggregate(pipeline))
+    return results
+

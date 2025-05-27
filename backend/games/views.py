@@ -10,7 +10,8 @@ from .queries import (
     delete_game,
     get_top_10_games,
     get_distinct_values,
-    filter_games_multiple
+    filter_games_multiple,
+    average_sales_by_platform
 )
 
 @api_view(['GET'])
@@ -85,3 +86,12 @@ def get_distinct_field_values(request, field_name):
         return Response(values)
     except Exception as e:
         return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['GET'])
+def average_sales_view(request):
+    try:
+        results = average_sales_by_platform()
+        return Response(results)
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)
+
