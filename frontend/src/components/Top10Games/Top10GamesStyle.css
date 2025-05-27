@@ -1,0 +1,23 @@
+.top10games-container {
+    padding: 20px;
+    background-color: #f0f4f8;
+    border-radius: 8px;
+    max-width: 600px;
+    margin: 20px auto;
+  }
+  
+  .top10games-container h2 {
+    color: #333;
+    text-align: center;
+  }
+  
+  .top10games-container ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .top10games-container li {
+    padding: 8px 0;
+    border-bottom: 1px solid #ccc;
+  }
+  
