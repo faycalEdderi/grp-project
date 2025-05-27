@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import './Top10GamesStyle.css';
 
-function Top10GamesComponent() {
+function Top10Games() {
   const [games, setGames] = useState([]);
 
   useEffect(() => {
@@ -25,4 +25,4 @@ function Top10GamesComponent() {
   );
 }
 
-export default Top10GamesComponent;
+export default Top10Games;
