@@ -10,9 +10,36 @@ export default function AllGames() {
     Year_of_Release: '',
   });
 
+  const [distinctValues, setDistinctValues] = useState({
+    Platform: [],
+    Genre: [],
+    Publisher: [],
+    Year_of_Release: [],
+  });
+
+  useEffect(() => {
+    fetchGames(filters);
+  }, [filters]);
+
+  useEffect(() => {
+    const fields = ['Platform', 'Genre', 'Publisher', 'Year_of_Release'];
+    Promise.all(
+      fields.map((field) =>
+        fetch(`http://localhost:8000/api/games/distinct/${field}/`)
+          .then((res) => res.json())
+          .then((data) => [field, data])
+      )
+    ).then((results) => {
+      const values = {};
+      results.forEach(([field, data]) => {
+        values[field] = data.filter((v) => v); // enlève les null/undefined
+      });
+      setDistinctValues(values);
+    });
+  }, []);
+
   const fetchGames = async (filters) => {
     try {
-      // Construire la query string à partir de l'objet filters (filtre non vide uniquement)
       const queryParams = new URLSearchParams();
       for (const [key, value] of Object.entries(filters)) {
         if (value) queryParams.append(key, value);
@@ -30,10 +57,6 @@ export default function AllGames() {
     }
   };
 
-  useEffect(() => {
-    fetchGames(filters);
-  }, [filters]);
-
   const handleFilterChange = (type, value) => {
     setFilters((prev) => ({
       ...prev,
@@ -48,56 +71,33 @@ export default function AllGames() {
       <div className="filters">
         <h4>Filtres :</h4>
 
-        <label>Plateforme : </label>
-        <select
-          value={filters.Platform}
-          onChange={(e) => handleFilterChange('Platform', e.target.value)}
-        >
-          <option value="">--</option>
-          {/* Remplace par ta liste dynamique ou statique */}
-          <option value="PS4">PS4</option>
-          <option value="Wii">Wii</option>
-          <option value="DS">DS</option>
-        </select>
+        {['Platform', 'Genre', 'Publisher', 'Year_of_Release'].map((field) => (
+          <div key={field}>
+            <label>{field} : </label>
+            <select
+              value={filters[field]}
+              onChange={(e) => handleFilterChange(field, e.target.value)}
+            >
+              <option value="">--</option>
+              {distinctValues[field].map((option, idx) => (
+                <option key={idx} value={option}>
+                  {option}
+                </option>
+              ))}
+            </select>
+          </div>
+        ))}
 
-        <label>Genre : </label>
-        <select
-          value={filters.Genre}
-          onChange={(e) => handleFilterChange('Genre', e.target.value)}
+        <button
+          onClick={() =>
+            setFilters({
+              Platform: '',
+              Genre: '',
+              Publisher: '',
+              Year_of_Release: '',
+            })
+          }
         >
-          <option value="">--</option>
-          <option value="Sports">Sports</option>
-          <option value="Platform">Platform</option>
-          <option value="Racing">Racing</option>
-        </select>
-
-        <label>Éditeur : </label>
-        <select
-          value={filters.Publisher}
-          onChange={(e) => handleFilterChange('Publisher', e.target.value)}
-        >
-          <option value="">--</option>
-          <option value="Nintendo">Nintendo</option>
-          <option value="EA">EA</option>
-        </select>
-
-        <label>Année : </label>
-        <select
-          value={filters.Year_of_Release}
-          onChange={(e) => handleFilterChange('Year_of_Release', e.target.value)}
-        >
-          <option value="">--</option>
-          <option value="2006">2006</option>
-          <option value="2009">2009</option>
-          <option value="2010">2010</option>
-        </select>
-
-        <button onClick={() => setFilters({
-          Platform: '',
-          Genre: '',
-          Publisher: '',
-          Year_of_Release: '',
-        })}>
           Réinitialiser les filtres
         </button>
       </div>
@@ -105,7 +105,8 @@ export default function AllGames() {
       <ul className="games-list">
         {games.map((game, index) => (
           <li key={index}>
-            <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} – {game.Publisher} – {game.Year_of_Release}
+            <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{' '}
+            {game.Publisher} – {game.Year_of_Release}
           </li>
         ))}
       </ul>
