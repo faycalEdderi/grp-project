@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import './AllGames.css';
+import React, { useEffect, useState } from "react";
+import "./AllGames.css";
+import UpdateGame from "../UpdateGame/UpdateGame";
+import { Pencil, Trash2 } from "lucide-react";
 
 export default function AllGames() {
   const [games, setGames] = useState([]);
@@ -9,11 +11,31 @@ export default function AllGames() {
   const gamesPerPage = 10;
 
   const [filters, setFilters] = useState({
-    Platform: '',
-    Genre: '',
-    Publisher: '',
-    Year_of_Release: '',
+    Platform: "",
+    Genre: "",
+    Publisher: "",
+    Year_of_Release: "",
   });
+
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Supprimer ce jeu ?")) return;
+    try {
+      await fetch(`http://localhost:8000/api/games/${id}/delete/`, {
+        method: "DELETE",
+      });
+      fetchGames(filters);
+    } catch (err) {
+      console.error("Erreur suppression :", err);
+    }
+  };
+
+  const handleEditClick = (game) => {
+    setSelectedGame(game);
+    setShowModal(true);
+  };
 
   const [distinctValues, setDistinctValues] = useState({
     Platform: [],
@@ -27,7 +49,7 @@ export default function AllGames() {
   }, [filters, currentPage]);
 
   useEffect(() => {
-    const fields = ['Platform', 'Genre', 'Publisher', 'Year_of_Release'];
+    const fields = ["Platform", "Genre", "Publisher", "Year_of_Release"];
     Promise.all(
       fields.map((field) =>
         fetch(`http://localhost:8000/api/games/distinct/${field}/`)
@@ -50,20 +72,20 @@ export default function AllGames() {
       for (const [key, value] of Object.entries(filters)) {
         if (value) queryParams.append(key, value);
       }
-      queryParams.append('page', currentPage);
-      queryParams.append('per_page', gamesPerPage);
-      
+      queryParams.append("page", currentPage);
+      queryParams.append("per_page", gamesPerPage);
+
       const queryString = queryParams.toString();
       const url = queryString
         ? `http://localhost:8000/api/games/filter?${queryString}`
-        : `http://localhost:8000/api/games/all/?page=${currentPage}&per_page=${gamesPerPage}`;
+        : "http://localhost:8000/api/games/all/";
 
       const res = await fetch(url);
       const data = await res.json();
       setGames(data.games || data);
       setTotalPages(data.total_pages || Math.ceil(data.length / gamesPerPage));
     } catch (err) {
-      console.error('Erreur lors du chargement des jeux :', err);
+      console.error("Erreur lors du chargement des jeux :", err);
     } finally {
       setLoading(false);
     }
@@ -74,7 +96,7 @@ export default function AllGames() {
       ...prev,
       [type]: value,
     }));
-    setCurrentPage(1); // Reset to first page when filters change
+    setCurrentPage(1);
   };
 
   const handlePageChange = (newPage) => {
@@ -87,8 +109,7 @@ export default function AllGames() {
 
       <div className="filters">
         <h4>Filtres :</h4>
-
-        {['Platform', 'Genre', 'Publisher', 'Year_of_Release'].map((field) => (
+        {["Platform", "Genre", "Publisher", "Year_of_Release"].map((field) => (
           <div key={field}>
             <label>{field} : </label>
             <select
@@ -104,17 +125,15 @@ export default function AllGames() {
             </select>
           </div>
         ))}
-
         <button
-          onClick={() => {
+          onClick={() =>
             setFilters({
-              Platform: '',
-              Genre: '',
-              Publisher: '',
-              Year_of_Release: '',
-            });
-            setCurrentPage(1);
-          }}
+              Platform: "",
+              Genre: "",
+              Publisher: "",
+              Year_of_Release: "",
+            })
+          }
         >
           Réinitialiser les filtres
         </button>
@@ -130,8 +149,16 @@ export default function AllGames() {
           <ul className="games-list">
             {games.map((game, index) => (
               <li key={index}>
-                <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{' '}
+                <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{" "}
                 {game.Publisher} – {game.Year_of_Release}
+                <span className="action-icons">
+                  <Pencil size={18} onClick={() => handleEditClick(game)} />
+                  <Trash2
+                    size={18}
+                    color="red"
+                    onClick={() => handleDelete(game._id)}
+                  />
+                </span>
               </li>
             ))}
           </ul>
@@ -155,6 +182,13 @@ export default function AllGames() {
           </div>
         </>
       )}
+
+      <UpdateGame
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        game={selectedGame}
+        onUpdate={() => fetchGames(filters)}
+      />
     </div>
   );
 }

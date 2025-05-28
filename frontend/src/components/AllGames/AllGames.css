@@ -76,6 +76,15 @@
   color: #1d4875;
 }
 
+.action-icons {
+  float: right;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  cursor: pointer;
+}
+
+
 .loading-spinner {
   display: flex;
   flex-direction: column;
