@@ -3,6 +3,11 @@ import './AllGames.css';
 
 export default function AllGames() {
   const [games, setGames] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const gamesPerPage = 10;
+
   const [filters, setFilters] = useState({
     Platform: '',
     Genre: '',
@@ -19,7 +24,7 @@ export default function AllGames() {
 
   useEffect(() => {
     fetchGames(filters);
-  }, [filters]);
+  }, [filters, currentPage]);
 
   useEffect(() => {
     const fields = ['Platform', 'Genre', 'Publisher', 'Year_of_Release'];
@@ -32,7 +37,7 @@ export default function AllGames() {
     ).then((results) => {
       const values = {};
       results.forEach(([field, data]) => {
-        values[field] = data.filter((v) => v); // enlève les null/undefined
+        values[field] = data.filter((v) => v);
       });
       setDistinctValues(values);
     });
@@ -40,20 +45,27 @@ export default function AllGames() {
 
   const fetchGames = async (filters) => {
     try {
+      setLoading(true);
       const queryParams = new URLSearchParams();
       for (const [key, value] of Object.entries(filters)) {
         if (value) queryParams.append(key, value);
       }
+      queryParams.append('page', currentPage);
+      queryParams.append('per_page', gamesPerPage);
+      
       const queryString = queryParams.toString();
       const url = queryString
         ? `http://localhost:8000/api/games/filter?${queryString}`
-        : 'http://localhost:8000/api/games/all/';
+        : `http://localhost:8000/api/games/all/?page=${currentPage}&per_page=${gamesPerPage}`;
 
       const res = await fetch(url);
       const data = await res.json();
-      setGames(data);
+      setGames(data.games || data);
+      setTotalPages(data.total_pages || Math.ceil(data.length / gamesPerPage));
     } catch (err) {
       console.error('Erreur lors du chargement des jeux :', err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -62,6 +74,11 @@ export default function AllGames() {
       ...prev,
       [type]: value,
     }));
+    setCurrentPage(1); // Reset to first page when filters change
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
   };
 
   return (
@@ -89,27 +106,55 @@ export default function AllGames() {
         ))}
 
         <button
-          onClick={() =>
+          onClick={() => {
             setFilters({
               Platform: '',
               Genre: '',
               Publisher: '',
               Year_of_Release: '',
-            })
-          }
+            });
+            setCurrentPage(1);
+          }}
         >
           Réinitialiser les filtres
         </button>
       </div>
 
-      <ul className="games-list">
-        {games.map((game, index) => (
-          <li key={index}>
-            <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{' '}
-            {game.Publisher} – {game.Year_of_Release}
-          </li>
-        ))}
-      </ul>
+      {loading ? (
+        <div className="loading-spinner">
+          <div className="spinner"></div>
+          <p>Chargement des jeux...</p>
+        </div>
+      ) : (
+        <>
+          <ul className="games-list">
+            {games.map((game, index) => (
+              <li key={index}>
+                <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{' '}
+                {game.Publisher} – {game.Year_of_Release}
+              </li>
+            ))}
+          </ul>
+
+          <div className="pagination">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+            >
+              Précédent
+            </button>
+            <span>
+              Page {currentPage} sur {totalPages}
+            </span>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Suivant
+            </button>
+          </div>
+        </>
+      )}
     </div>
   );
 }
