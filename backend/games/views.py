@@ -12,7 +12,8 @@ from .queries import (
     get_top_10_games,
     get_distinct_values,
     filter_games_multiple,
-    average_sales_by_platform
+    average_sales_by_platform,
+    get_paginated_games
 )
 
 @api_view(['GET'])
@@ -98,3 +99,26 @@ def average_sales_view(request):
     except Exception as e:
         return Response({'error': str(e)}, status=400)
 
+
+@api_view(['GET'])
+def paginated_games_view(request):
+    try:
+        page = int(request.query_params.get("page", 1))
+        per_page = int(request.query_params.get("per_page", 10))
+
+        filters = {}
+        for field in ['Platform', 'Genre', 'Publisher', 'Year_of_Release']:
+            value = request.query_params.get(field)
+            if value:
+                if field == "Year_of_Release":
+                    try:
+                        value = int(value)
+                    except ValueError:
+                        return Response({'error': 'Year must be int'}, status=400)
+                filters[field] = value
+
+        data = get_paginated_games(page, per_page, filters)
+        return Response(data)
+
+    except Exception as e:
+        return Response({'error': str(e)}, status=400)

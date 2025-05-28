@@ -103,3 +103,21 @@ def average_sales_by_platform():
     results = list(collection.aggregate(pipeline))
     return results
 
+def get_paginated_games(page=1, per_page=10, filters=None):
+    query = filters if filters else {}
+    skip = (page - 1) * per_page
+
+    total = collection.count_documents(query)
+    games = list(
+        collection.find(query).skip(skip).limit(per_page)
+    )
+    for game in games:
+        game["_id"] = str(game["_id"])
+
+    return {
+        "games": games,
+        "total": total,
+        "page": page,
+        "per_page": per_page,
+        "total_pages": (total + per_page - 1) // per_page,
+    }
