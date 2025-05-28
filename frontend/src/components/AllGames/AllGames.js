@@ -1,14 +1,36 @@
-import React, { useEffect, useState } from 'react';
-import './AllGames.css';
+import React, { useEffect, useState } from "react";
+import "./AllGames.css";
+import UpdateGame from "../UpdateGame/UpdateGame";
+import { Pencil, Trash2 } from "lucide-react";
 
 export default function AllGames() {
   const [games, setGames] = useState([]);
   const [filters, setFilters] = useState({
-    Platform: '',
-    Genre: '',
-    Publisher: '',
-    Year_of_Release: '',
+    Platform: "",
+    Genre: "",
+    Publisher: "",
+    Year_of_Release: "",
   });
+
+  const [selectedGame, setSelectedGame] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm("Supprimer ce jeu ?")) return;
+    try {
+      await fetch(`http://localhost:8000/api/games/${id}/delete/`, {
+        method: "DELETE",
+      });
+      fetchGames(filters);
+    } catch (err) {
+      console.error("Erreur suppression :", err);
+    }
+  };
+
+  const handleEditClick = (game) => {
+    setSelectedGame(game);
+    setShowModal(true);
+  };
 
   const [distinctValues, setDistinctValues] = useState({
     Platform: [],
@@ -22,7 +44,7 @@ export default function AllGames() {
   }, [filters]);
 
   useEffect(() => {
-    const fields = ['Platform', 'Genre', 'Publisher', 'Year_of_Release'];
+    const fields = ["Platform", "Genre", "Publisher", "Year_of_Release"];
     Promise.all(
       fields.map((field) =>
         fetch(`http://localhost:8000/api/games/distinct/${field}/`)
@@ -32,7 +54,7 @@ export default function AllGames() {
     ).then((results) => {
       const values = {};
       results.forEach(([field, data]) => {
-        values[field] = data.filter((v) => v); // enlève les null/undefined
+        values[field] = data.filter((v) => v);
       });
       setDistinctValues(values);
     });
@@ -47,13 +69,13 @@ export default function AllGames() {
       const queryString = queryParams.toString();
       const url = queryString
         ? `http://localhost:8000/api/games/filter?${queryString}`
-        : 'http://localhost:8000/api/games/all/';
+        : "http://localhost:8000/api/games/all/";
 
       const res = await fetch(url);
       const data = await res.json();
       setGames(data);
     } catch (err) {
-      console.error('Erreur lors du chargement des jeux :', err);
+      console.error("Erreur lors du chargement des jeux :", err);
     }
   };
 
@@ -71,7 +93,7 @@ export default function AllGames() {
       <div className="filters">
         <h4>Filtres :</h4>
 
-        {['Platform', 'Genre', 'Publisher', 'Year_of_Release'].map((field) => (
+        {["Platform", "Genre", "Publisher", "Year_of_Release"].map((field) => (
           <div key={field}>
             <label>{field} : </label>
             <select
@@ -91,10 +113,10 @@ export default function AllGames() {
         <button
           onClick={() =>
             setFilters({
-              Platform: '',
-              Genre: '',
-              Publisher: '',
-              Year_of_Release: '',
+              Platform: "",
+              Genre: "",
+              Publisher: "",
+              Year_of_Release: "",
             })
           }
         >
@@ -105,11 +127,25 @@ export default function AllGames() {
       <ul className="games-list">
         {games.map((game, index) => (
           <li key={index}>
-            <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{' '}
+            <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} –{" "}
             {game.Publisher} – {game.Year_of_Release}
+            <span className="action-icons">
+              <Pencil size={18} onClick={() => handleEditClick(game)} />
+              <Trash2
+                size={18}
+                color="red"
+                onClick={() => handleDelete(game._id)}
+              />
+            </span>
           </li>
         ))}
       </ul>
+      <UpdateGame
+        show={showModal}
+        onClose={() => setShowModal(false)}
+        game={selectedGame}
+        onUpdate={() => fetchGames(filters)}
+      />
     </div>
   );
 }

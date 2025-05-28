@@ -1,6 +1,7 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from bson.errors import InvalidId
 
 from .queries import (
     get_all_games,
@@ -43,7 +44,10 @@ def get_game_view(request, game_id):
 @api_view(['PUT'])
 def update_game_view(request, game_id):
     try:
-        updated_data = request.data
+        updated_data = dict(request.data)
+        if '_id' in updated_data:
+            del updated_data['_id']
+
         modified_count = update_game(game_id, updated_data)
         return Response({'modified': modified_count})
     except Exception as e:
@@ -65,7 +69,6 @@ def filter_games_view(request):
     for key in allowed_fields:
         value = request.query_params.get(key)
         if value:
-            # convertir Year_of_Release en int si besoin
             if key == 'Year_of_Release':
                 try:
                     value = int(value)

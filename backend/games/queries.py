@@ -26,13 +26,13 @@ def get_game_by_id(game_id):
     return game
 
 
-def update_game(game_id, updated_data):
+def update_game(obj_id, updated_data):
+    print(f"Updating game with ID: {obj_id} with data: {updated_data}")
     result = collection.update_one(
-        {"_id": ObjectId(game_id)},
+        {"_id": ObjectId(obj_id)},
         {"$set": updated_data}
     )
     return result.modified_count
-
 
 def delete_game(game_id):
     result = collection.delete_one({"_id": ObjectId(game_id)})
@@ -72,12 +72,12 @@ def filter_games_multiple(filters):
 
     for field, value in filters.items():
         if field not in allowed_fields:
-            continue  # ignore les champs non autorisés
+            continue 
         if field == "Year_of_Release":
             try:
                 value = int(value)
             except ValueError:
-                continue  # ignore si mauvaise valeur
+                continue 
         query[field] = value
 
     results = list(collection.find(query))
