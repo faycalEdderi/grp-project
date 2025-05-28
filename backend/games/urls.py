@@ -8,7 +8,8 @@ from .views import (
     delete_game_view,
     filter_games_view,
     get_distinct_field_values,
-    average_sales_view
+    average_sales_view,
+    paginated_games_view
 )
 
 urlpatterns = [
@@ -16,6 +17,8 @@ urlpatterns = [
     path('all/', get_all_games_view, name='all_games'),
     path('create/', create_game_view, name='create_game'),
     path('analytics/average-sales/', average_sales_view, name='average_sales'),
+    path("paginated/", paginated_games_view),
+
 
     
     path('filter/', filter_games_view, name='filter_games'),
