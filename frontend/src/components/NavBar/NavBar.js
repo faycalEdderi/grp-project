@@ -9,6 +9,7 @@ function NavBar() {
       <Link to="/games">🎮 Tous les jeux</Link>
       <Link to="/create">➕ Ajouter un jeu</Link>
       <Link to="/platform-stats">📊 Statistiques par plateforme</Link>
+      <Link to="/steam-dashboard">📈 Statistiques Steam</Link>
     </nav>
   );
 }

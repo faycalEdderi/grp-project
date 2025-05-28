@@ -5,6 +5,7 @@ import Top10Games from './components/Top10Games/Top10Games';
 import AllGames from './components/AllGames/AllGames';
 import CreateGame from './components/CreateGame/CreateGame';
 import PlatformStats from './components/PlatformStats/PlatformStats';
+import SteamDashboard from './components/SteamDashboard/SteamDashboard';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/games" element={<AllGames />} />
           <Route path="/create" element={<CreateGame />} />
           <Route path="/platform-stats" element={<PlatformStats />} />
+          <Route path="/steam-dashboard" element={<SteamDashboard />} />
         </Routes>
       </div>
     </Router>

@@ -8,7 +8,12 @@ from .views import (
     delete_game_view,
     filter_games_view,
     get_distinct_field_values,
-    average_sales_view
+    average_sales_view,
+    top_10_developers,
+    games_per_year,
+    average_critic_score_by_genre_view,
+    count_by_rating,
+    filter_games_by_min_global_sales
 )
 
 urlpatterns = [
@@ -24,6 +29,12 @@ urlpatterns = [
     path('<str:game_id>/', get_game_view, name='get_game'),
     path('<str:game_id>/update/', update_game_view, name='update_game'),
     path('<str:game_id>/delete/', delete_game_view, name='delete_game'),
+    
+    path('steam/top10-developers/', top_10_developers, name='top_10_developers'),
+    path('steam/count-games-per-year/', games_per_year, name='count_games_per_year'),
+    path('steam/average-critic-score-by-genre/', average_critic_score_by_genre_view, name='average_critic_score_by_genre'),
+    path('steam/count-games-by-rating/', count_by_rating, name='count_games_by_rating'),
+    path('steam/filter-by-min-global-sales/', filter_games_by_min_global_sales, name='filter_games_by_min_global_sales'),
 
 ]
 

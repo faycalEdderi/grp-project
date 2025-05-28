@@ -13,7 +13,15 @@ from .queries import (
     get_distinct_values,
     filter_games_multiple,
     average_sales_by_platform
+    
 )
+from .queries_steam import (
+    get_top_10_developers,
+    count_games_per_year,
+    get_average_critic_score_by_genre,
+    count_games_by_rating,
+    filter_games_by_min_global_sales   
+    )
 
 @api_view(['GET'])
 def top_10_games(request):
@@ -97,4 +105,36 @@ def average_sales_view(request):
         return Response(results)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+    
+    
+# Steam-specific queries
+@api_view(['GET'])
+def top_10_developers(request):
+    data = get_top_10_developers()
+    return Response(data)
+
+@api_view(['GET'])
+def games_per_year(request):
+    data = count_games_per_year()
+    return Response(data)
+
+@api_view(['GET'])
+def average_critic_score_by_genre_view(request):
+    data = get_average_critic_score_by_genre()
+    return Response(data)
+
+@api_view(['GET'])
+def count_by_rating(request):
+    data = count_games_by_rating()
+    return Response(data)
+
+@api_view(['GET'])
+def filter_games_by_min_sales_view(request):
+    try:
+        min_sales = float(request.query_params.get('min_sales', 0))
+        games = filter_games_by_min_global_sales(min_sales)
+        return Response(games)
+    except ValueError:
+        return Response({'error': 'min_sales doit être un nombre'}, status=400)
+
 
