@@ -1,18 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 .review-chart-container {
-  background: #f9f9fb;
-  border-radius: 16px;
-  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  background: #5c94fc;
+  border: 8px solid #222;
+  border-radius: 0;
+  box-shadow: 0 8px #222, 0 0 0 8px #fff inset;
   padding: 32px 24px 24px 24px;
-  margin: 32px auto;
-  max-width: 900px;
+  margin: 40px auto;
+  max-width: 1000px;
+  font-family: 'Press Start 2P', monospace;
 }
 
 .review-chart-container h3 {
   text-align: center;
   margin-bottom: 24px;
-  color: #22223b;
-  font-size: 1.5rem;
-  letter-spacing: 0.5px;
+  color: #fff;
+  font-size: 1.2rem;
+  letter-spacing: 2px;
+  text-shadow: 2px 2px #222, 4px 4px #7ec0ee;
 }
 
 .chart-controls {
@@ -23,29 +28,41 @@
 }
 
 .chart-controls button {
-  background: #e0e1ea;
-  border: none;
-  border-radius: 8px;
-  padding: 10px 24px;
+  background: #ffe066;
+  border: 3px solid #222;
+  border-radius: 0;
+  padding: 12px 32px;
   font-size: 1rem;
-  color: #22223b;
+  color: #222;
   cursor: pointer;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  font-family: inherit;
   font-weight: 500;
+  box-shadow: 0 2px #222;
 }
 
 .chart-controls button.active,
 .chart-controls button:hover {
-  background: #4f8cff;
-  color: #fff;
+  background: #ffb347;
+  color: #222;
+  box-shadow: 0 1px #222;
 }
 
 .custom-tooltip {
   font-size: 0.98rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  background: #fff;
-  color: #22223b;
+  border-radius: 0;
+  box-shadow: 0 2px #222;
+  background: #ffe066;
+  color: #222;
+  border: 3px solid #222;
+  font-family: inherit;
+  padding: 12px 18px;
+}
+
+/* Recharts overrides for pixel font */
+.recharts-wrapper text {
+  font-family: 'Press Start 2P', monospace !important;
+  font-size: 0.7rem !important;
 }
 
 @media (max-width: 700px) {

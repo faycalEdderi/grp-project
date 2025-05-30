@@ -1,27 +1,109 @@
 .create-game-container {
-    max-width: 400px;
-    margin: 1rem auto;
-    padding: 1rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-  }
-  
-  .create-game-container form input {
-    display: block;
-    width: 100%;
-    margin: 0.5rem 0;
-    padding: 0.5rem;
-    font-size: 1rem;
-  }
-  
-  .create-game-container form button {
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    cursor: pointer;
-  }
-  
-  .message {
-    margin-top: 1rem;
-    font-weight: bold;
-  }
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 32px 16px;
+  background: #5c94fc;
+  border: 8px solid #222;
+  box-shadow: 0 8px #222, 0 0 0 8px #fff inset;
+  font-family: 'Press Start 2P', monospace;
+  border-radius: 0;
+}
+
+.create-game-container h2 {
+  text-align: center;
+  margin-bottom: 2rem;
+  color: #fff;
+  font-size: 1.2rem;
+  text-shadow: 2px 2px #222, 4px 4px #7ec0ee;
+  letter-spacing: 2px;
+}
+
+.create-game-container form {
+  background: #ffb347;
+  border: 5px solid #222;
+  box-shadow: 0 4px #222;
+  border-radius: 0;
+  padding: 24px 18px 18px 18px;
+  margin-bottom: 2rem;
+}
+
+.create-game-container form input {
+  display: block;
+  width: 100%;
+  margin: 0.7rem 0;
+  padding: 0.7rem;
+  font-size: 1rem;
+  border: 2px solid #222;
+  border-radius: 0;
+  font-family: inherit;
+  background: #fff;
+}
+
+.create-game-container form button {
+  padding: 0.7rem 1.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+  background: #ffe066;
+  color: #222;
+  border: 3px solid #222;
+  border-radius: 0;
+  font-family: inherit;
+  box-shadow: 0 2px #222;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.create-game-container form button:hover {
+  background: #ffd700;
+  box-shadow: 0 1px #222;
+}
+
+.message {
+  margin-top: 1rem;
+  font-weight: bold;
+  color: #222;
+  font-family: inherit;
+  background: #ffe066;
+  border: 3px solid #222;
+  box-shadow: 0 2px #222;
+  padding: 12px 0;
+  border-radius: 0;
+  text-align: center;
+}
+
+.mario-success-message {
+  position: fixed;
+  left: 0;
+  top: 40%;
+  width: 100vw;
+  z-index: 1000;
+  background: none;
+  border: none;
+  box-shadow: none;
+  color: #222;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.3rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  pointer-events: none;
+}
+
+.mario-run-img {
+  width: 220px;
+  height: 220px;
+  object-fit: cover;
+  border-radius: 50%;
+  border: 5px solid #222;
+  background: #fff;
+  box-shadow: 0 2px #222;
+  animation: mario-run-screen 2.5s linear infinite;
+}
+
+@keyframes mario-run-screen {
+  0% { transform: translateX(-30vw) scaleX(1); }
+  50% { transform: translateX(30vw) scaleX(-1); }
+  100% { transform: translateX(-30vw) scaleX(1); }
+}
   

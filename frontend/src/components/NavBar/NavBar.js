@@ -4,11 +4,21 @@ import './Navbar.css';
 function NavBar() {
   return (
     <nav className="navbar">
-      <Link to="/">🏆 Top 10</Link>
-      <Link to="/games">🎮 Tous les jeux</Link>
-      <Link to="/create">➕ Ajouter un jeu</Link>
-      <Link to="/platform-stats">📊 Statistiques par plateforme</Link>
-      <Link to="/reviews-chart">📈 Graphique des avis</Link>
+      <div className="navbar-link-block">
+        <Link to="/"><span role="img" aria-label="trophy">🏆</span> <br />Top 10</Link>
+      </div>
+      <div className="navbar-link-block">
+        <Link to="/games"><span role="img" aria-label="gamepad">🎮</span> <br />Tous les jeux</Link>
+      </div>
+      <div className="navbar-link-block">
+        <Link to="/create"><span role="img" aria-label="plus">➕</span> <br />Ajouter un jeu</Link>
+      </div>
+      <div className="navbar-link-block">
+        <Link to="/platform-stats"><span role="img" aria-label="chart">📊</span> <br />Statistiques<br />par plateforme</Link>
+      </div>
+      <div className="navbar-link-block">
+        <Link to="/reviews-chart"><span role="img" aria-label="chart">📈</span> <br />Graphique<br />des avis</Link>
+      </div>
     </nav>
   );
 }
