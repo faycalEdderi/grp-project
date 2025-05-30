@@ -14,7 +14,7 @@ function Top10Games() {
   return (
     <div className="top10games-container">
       <h2>Top 10 des jeux les plus vendus</h2>
-      <ul>
+      <ul className="top10games-list">
         {games.map((game, index) => (
           <li key={index}>
             {game.Name} — {game.Global_Sales} millions vendus

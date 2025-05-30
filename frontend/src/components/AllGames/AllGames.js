@@ -1,7 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import "./AllGames.css";
 import UpdateGame from "../UpdateGame/UpdateGame";
-import { Pencil, Trash2 } from "lucide-react";
 
 export default function AllGames() {
   const [games, setGames] = useState([]);
@@ -26,6 +25,12 @@ export default function AllGames() {
     Publisher: [],
     Year_of_Release: [],
   });
+
+  const [successMsg, setSuccessMsg] = useState("");
+  const [successType, setSuccessType] = useState("");
+
+  const audioSuccessRef = useRef(null);
+  const audioDeleteRef = useRef(null);
 
   const fetchGames = async () => {
     try {
@@ -64,6 +69,13 @@ export default function AllGames() {
         method: "DELETE",
       });
       fetchGames();
+      setSuccessMsg("Jeu supprimé avec succès !");
+      setSuccessType("delete");
+      if (audioDeleteRef.current) {
+        audioDeleteRef.current.currentTime = 0;
+        audioDeleteRef.current.play();
+      }
+      setTimeout(() => setSuccessMsg(""), 4000);
     } catch (err) {
       console.error("Erreur suppression :", err);
     }
@@ -84,6 +96,23 @@ export default function AllGames() {
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
+  };
+
+  const handleUpdate = () => {
+    fetchGames();
+    setSuccessMsg("Jeu modifié avec succès !");
+    setSuccessType("edit");
+    if (audioSuccessRef.current) {
+      audioSuccessRef.current.currentTime = 0;
+      audioSuccessRef.current.play();
+      setTimeout(() => {
+        if (audioSuccessRef.current) {
+          audioSuccessRef.current.pause();
+          audioSuccessRef.current.currentTime = 0;
+        }
+      }, 3000);
+    }
+    setTimeout(() => setSuccessMsg(""), 4000);
   };
 
   useEffect(() => {
@@ -117,6 +146,20 @@ export default function AllGames() {
   return (
     <div className="all-games-container">
       <h2>Liste des jeux</h2>
+
+      <audio ref={audioSuccessRef} src="/edit.mp3" preload="auto" />
+      <audio ref={audioDeleteRef} src="/delete.mp3" preload="auto" />
+
+      {successMsg && (
+        <div className="success-message-mario">
+          <img
+            src="https://images.unsplash.com/photo-1682163372075-40d26b02f8c9?q=80&w=2349&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+            alt="Mario saute !"
+            className="mario-jump-img mario-jump-img-large"
+          />
+          <span>{successMsg}</span>
+        </div>
+      )}
 
       <div className="filters">
         <h4>Filtres :</h4>
@@ -164,15 +207,22 @@ export default function AllGames() {
             <ul className="games-list">
               {games.map((game, index) => (
                 <li key={index}>
-                  <strong>{game.Name}</strong> – {game.Platform} – {game.Genre}{" "}
-                  – {game.Publisher} – {game.Year_of_Release}
+                  <span className="game-info">
+                    <strong>{game.Name}</strong> – {game.Platform} – {game.Genre} – {game.Publisher} – {game.Year_of_Release}
+                  </span>
                   <span className="action-icons">
-                    <Pencil size={18} onClick={() => handleEditClick(game)} />
-                    <Trash2
-                      size={18}
-                      color="red"
+                    <button
+                      className="pixel-btn-mario green responsive-btn"
+                      onClick={() => handleEditClick(game)}
+                    >
+                      ✏️ Modifier
+                    </button>
+                    <button
+                      className="pixel-btn-mario red responsive-btn"
                       onClick={() => handleDelete(game._id)}
-                    />
+                    >
+                      🗑️ Supprimer
+                    </button>
                   </span>
                 </li>
               ))}
@@ -218,7 +268,7 @@ export default function AllGames() {
         show={showModal}
         onClose={() => setShowModal(false)}
         game={selectedGame}
-        onUpdate={() => fetchGames()}
+        onUpdate={handleUpdate}
       />
     </div>
   );
