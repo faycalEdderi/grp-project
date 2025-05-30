@@ -1,23 +1,46 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 .top10games-container {
-    padding: 20px;
-    background-color: #f0f4f8;
-    border-radius: 8px;
-    max-width: 600px;
-    margin: 20px auto;
-  }
-  
-  .top10games-container h2 {
-    color: #333;
-    text-align: center;
-  }
-  
-  .top10games-container ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .top10games-container li {
-    padding: 8px 0;
-    border-bottom: 1px solid #ccc;
-  }
+  background: #5c94fc;
+  border: 8px solid #222;
+  box-shadow: 0 8px #222, 0 0 0 8px #fff inset;
+  font-family: 'Press Start 2P', monospace;
+  max-width: 700px;
+  margin: 40px auto;
+  padding: 32px 16px;
+  border-radius: 0;
+}
+
+.top10games-container h2 {
+  color: #fff;
+  text-align: center;
+  font-size: 1.2rem;
+  text-shadow: 2px 2px #222, 4px 4px #7ec0ee;
+  margin-bottom: 32px;
+  letter-spacing: 2px;
+}
+
+.top10games-list {
+  background: #ffb347;
+  border: 5px solid #222;
+  box-shadow: 0 4px #222;
+  list-style: none;
+  padding: 24px 0 0 0;
+  border-radius: 0;
+  margin: 0;
+}
+
+.top10games-list li {
+  padding: 16px 0;
+  border-bottom: 2px dashed #5c94fc;
+  font-size: 0.9rem;
+  color: #222;
+  text-shadow: 1px 1px #fff, 2px 2px #222;
+  text-align: center;
+  font-family: inherit;
+}
+
+.top10games-list li:last-child {
+  border-bottom: none;
+}
   

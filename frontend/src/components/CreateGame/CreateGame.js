@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import './CreateGame.css';
 
+const MARIO_RUN_URL = "https://images.unsplash.com/photo-1682163372075-40d26b02f8c9?q=80&w=2349&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
+
 export default function CreateGameComponent() {
   const [formData, setFormData] = useState({
     Name: '',
@@ -12,6 +14,7 @@ export default function CreateGameComponent() {
   });
 
   const [message, setMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -42,6 +45,7 @@ export default function CreateGameComponent() {
       if (response.ok) {
         const json = await response.json();
         setMessage(`Jeu créé avec ID : ${json.inserted_id}`);
+        setShowSuccess(true);
         setFormData({
           Name: '',
           Platform: '',
@@ -50,12 +54,15 @@ export default function CreateGameComponent() {
           Publisher: '',
           Global_Sales: '',
         });
+        setTimeout(() => setShowSuccess(false), 3500);
       } else {
         const err = await response.json();
         setMessage(`Erreur: ${err.error || 'Impossible de créer le jeu'}`);
+        setShowSuccess(false);
       }
     } catch (error) {
       setMessage(`Erreur réseau: ${error.message}`);
+      setShowSuccess(false);
     }
   };
 
@@ -110,6 +117,16 @@ export default function CreateGameComponent() {
         <button type="submit">Créer le jeu</button>
       </form>
       {message && <p className="message">{message}</p>}
+      {showSuccess && (
+        <div className="mario-success-message">
+          <img
+            src={MARIO_RUN_URL}
+            alt="Mario court"
+            className="mario-run-img"
+          />
+          <span>Jeu ajouté avec succès !</span>
+        </div>
+      )}
     </div>
   );
 }
