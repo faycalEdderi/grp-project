@@ -1,19 +1,13 @@
+from bson.errors import InvalidId
+from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import status
-from bson.errors import InvalidId
 
-from .queries import (
-    get_all_games,
-    create_game,
-    get_game_by_id,
-    update_game,
-    delete_game,
-    get_top_10_games,
-    get_distinct_values,
-    filter_games_multiple,
-    average_sales_by_platform
-)
+from .queries import (average_sales_by_platform, create_game, delete_game,
+                      filter_games_multiple, get_all_games,
+                      get_distinct_values, get_game_by_id,
+                      get_games_by_reviews, get_top_10_games, update_game)
+
 
 @api_view(['GET'])
 def top_10_games(request):
@@ -97,4 +91,18 @@ def average_sales_view(request):
         return Response(results)
     except Exception as e:
         return Response({'error': str(e)}, status=400)
+
+@api_view(['GET'])
+def get_review_analytics(request):
+    """
+    API endpoint to get games with best/worst review scores based on simple positive/negative ratio
+    """
+    limit = int(request.GET.get('limit', 10))
+    sort_type = request.GET.get('sort_type', 'positive')
+    
+    if sort_type not in ['positive', 'negative']:
+        return Response({"error": "sort_type must be 'positive' or 'negative'"}, status=400)
+    
+    games = get_games_by_reviews(limit=limit, sort_type=sort_type)
+    return Response(games)
 

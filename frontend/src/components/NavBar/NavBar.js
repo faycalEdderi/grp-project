@@ -1,4 +1,3 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
@@ -9,6 +8,7 @@ function NavBar() {
       <Link to="/games">🎮 Tous les jeux</Link>
       <Link to="/create">➕ Ajouter un jeu</Link>
       <Link to="/platform-stats">📊 Statistiques par plateforme</Link>
+      <Link to="/reviews-chart">📈 Graphique des avis</Link>
     </nav>
   );
 }
