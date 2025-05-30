@@ -74,5 +74,19 @@
 .recharts-wrapper text {
   font-family: 'Press Start 2P', monospace !important;
   font-size: 0.7rem !important;
+  
+}
+
+.recharts-legend-item-text{
+  color: #222 !important;
+}
+
+
+.recharts-rectangle, .recharts-legend-icon {
+  fill: #ffb347 !important;
+}
+
+.recharts-label {
+  fill: #222 !important;
 }
   
