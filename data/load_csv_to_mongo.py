@@ -1,7 +1,7 @@
 import pandas as pd
 from pymongo import MongoClient
 
-client = MongoClient("mongodb://localhost:27017")
+client = MongoClient("mongodb+srv://amalplancher:amalplancher@cluster0.nty7qvb.mongodb.net/covid?retryWrites=true&w=majority")
 
 db = client["videogames"]
 collection = db["games"]

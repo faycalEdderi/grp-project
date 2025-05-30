@@ -1,6 +1,5 @@
-from pymongo import MongoClient
 from bson import ObjectId
-
+from pymongo import MongoClient
 
 client = MongoClient("mongodb://localhost:27017")
 db = client["videogames"]
@@ -103,21 +102,131 @@ def average_sales_by_platform():
     results = list(collection.aggregate(pipeline))
     return results
 
-def get_paginated_games(page=1, per_page=10, filters=None):
-    query = filters if filters else {}
-    skip = (page - 1) * per_page
 
-    total = collection.count_documents(query)
-    games = list(
-        collection.find(query).skip(skip).limit(per_page)
-    )
-    for game in games:
-        game["_id"] = str(game["_id"])
+def get_games_by_review_ratio(limit=10, sort_type="positive"):
+    """
+    Retrieve games with the best/worst review ratios from the reviews collection.
+    
+    Args:
+        limit (int): Number of games to return
+        sort_type (str): Whether to sort by "positive" or "negative" ratio
+    
+    Returns:
+        List of games with their review statistics
+    """
+    client = MongoClient("mongodb+srv://amalplancher:amalplancher@cluster0.nty7qvb.mongodb.net/covid?retryWrites=true&w=majority")
+    db = client["videogames"]
+    collection = db["reviews"]
+    
+    # Create pipeline for MongoDB aggregation
+    pipeline = [
+        # Filter out entries with no reviews
+        {"$match": {
+            "positive": {"$ne": "\\N"},
+            "negative": {"$ne": "\\N"},
+            "total": {"$gt": 100}  # Ensure sufficient review volume
+        }},
+        
+        # Convert string fields to numbers if needed
+        {"$addFields": {
+            "positive_num": {"$toInt": "$positive"},
+            "negative_num": {"$toInt": "$negative"},
+            "total_num": {"$toInt": "$total"}
+        }},
+        
+        # Calculate review ratios
+        {"$addFields": {
+            "positive_ratio": {"$divide": ["$positive_num", "$total_num"]},
+            "negative_ratio": {"$divide": ["$negative_num", "$total_num"]}
+        }},
+        
+        # Sort by requested ratio
+        {"$sort": {
+            f"{sort_type}_ratio": -1 if sort_type == "positive" else 1
+        }},
+        
+        # Limit results
+        {"$limit": limit},
+        
+        # Project needed fields
+        {"$project": {
+            "_id": 0,
+            "app_id": 1,
+            "name": 1,
+            "positive": "$positive_num",
+            "negative": "$negative_num", 
+            "total": "$total_num",
+            "positive_ratio": 1,
+            "negative_ratio": 1,
+            "review_score_description": 1
+        }}
+    ]
+    
+    results = list(collection.aggregate(pipeline))
+    
+    # Format ratios as percentages for frontend display
+    for game in results:
+        game["positive_ratio"] = round(game["positive_ratio"] * 100, 2)
+        game["negative_ratio"] = round(game["negative_ratio"] * 100, 2)
+    
+    return results
 
-    return {
-        "games": games,
-        "total": total,
-        "page": page,
-        "per_page": per_page,
-        "total_pages": (total + per_page - 1) // per_page,
-    }
+def get_games_by_reviews(limit=10, sort_type="positive"):
+    """
+    Retrieve games based on review data using simple review counts and ratios.
+    
+    Args:
+        limit (int): Number of games to return
+        sort_type (str): Sort by "positive" or "negative" ratio
+    
+    Returns:
+        List of games with their review statistics
+    """
+    client = MongoClient("mongodb://localhost:27017/")
+    db = client["videogames"]
+    collection = db["reviews"]
+    
+    # Create pipeline for MongoDB aggregation
+    pipeline = [
+        # Filter out entries with no reviews or insufficient review volume
+        {"$match": {
+            "positive": {"$type": "number"},
+            "negative": {"$type": "number"},
+            "total": {"$gt": 10000}  # Minimum reviews threshold
+        }},
+        
+        # Calculate review ratios
+        {"$addFields": {
+            "positive_ratio": {"$divide": ["$positive", {"$add": ["$positive", "$negative"]}]},
+        }},
+        
+        # Sort by requested type
+        {"$sort": {
+            "positive_ratio": -1 if sort_type == "positive" else 1
+        }},
+        
+        # Limit results
+        {"$limit": limit},
+        
+        # Project needed fields
+        {"$project": {
+            "_id": 0,
+            "app_id": 1,
+            "name": 1,
+            "positive": 1,
+            "negative": 1,
+            "total": {"$add": ["$positive", "$negative"]},
+            "positive_ratio": 1,
+            "review_score_description": 1
+        }}
+    ]
+    
+    results = list(collection.aggregate(pipeline))
+    
+    # Format ratios as percentages for frontend display
+    for game in results:
+        game["positive_ratio"] = round(game["positive_ratio"] * 100, 2)
+        game["negative_ratio"] = 100 - game["positive_ratio"]
+    
+    return results
+

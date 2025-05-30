@@ -1,0 +1,59 @@
+.review-chart-container {
+  background: #f9f9fb;
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+  padding: 32px 24px 24px 24px;
+  margin: 32px auto;
+  max-width: 900px;
+}
+
+.review-chart-container h3 {
+  text-align: center;
+  margin-bottom: 24px;
+  color: #22223b;
+  font-size: 1.5rem;
+  letter-spacing: 0.5px;
+}
+
+.chart-controls {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.chart-controls button {
+  background: #e0e1ea;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  color: #22223b;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  font-weight: 500;
+}
+
+.chart-controls button.active,
+.chart-controls button:hover {
+  background: #4f8cff;
+  color: #fff;
+}
+
+.custom-tooltip {
+  font-size: 0.98rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  background: #fff;
+  color: #22223b;
+}
+
+@media (max-width: 700px) {
+  .review-chart-container {
+    padding: 16px 4px;
+  }
+  .chart-controls button {
+    padding: 8px 12px;
+    font-size: 0.95rem;
+  }
+}
